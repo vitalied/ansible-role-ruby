@@ -1,2 +1,38 @@
 ---
 # defaults file for vitalied.ruby
+
+ruby_version: 2.3.0
+
+ruby_user: deploy
+
+rbenv_root: '~{{ ruby_user }}/.rbenv'
+
+ruby_gems:
+ - bundler
+
+rbenv_bashrc:
+  - 'export PATH="$HOME/.rbenv/bin:$PATH"'
+  - 'eval "$(rbenv init -)"'
+  - 'export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"'
+
+ruby_dependencies:
+  - autoconf
+  - automake
+  - bison
+  - curl
+  - build-essential
+  - git
+  - git-core
+  - python-software-properties
+  - libcurl4-openssl-dev
+  - libffi-dev
+  - libgdbm-dev
+  - libncurses5-dev
+  - libreadline-dev
+  - libssl-dev
+  - libtool
+  - libxml2-dev
+  - libxslt1-dev
+  - libyaml-dev
+  - pkg-config
+  - zlib1g-dev
