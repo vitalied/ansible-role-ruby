@@ -1,4 +1,6 @@
 ---
 # roles file for vitalied.ruby
 
+- src: vitalied.user
+
 - src: vitalied.ruby

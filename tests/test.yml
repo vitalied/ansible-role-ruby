@@ -1,0 +1,8 @@
+---
+# test file for vitalied.ruby
+
+- hosts: localhost
+  remote_user: root
+  roles:
+    - vitalied.user
+    - ansible-role-ruby
