@@ -1,2 +1,71 @@
 ---
 # tasks file for vitalied.ruby
+
+- name: install build dependencies
+  apt:
+    name={{ item }}
+    state=latest
+    install_recommends=no
+  with_items: "{{ ruby_dependencies }}"
+  tags: vitalied.ruby
+
+- name: update rbenv repo
+  git:
+    repo=git://github.com/sstephenson/rbenv.git
+    dest={{ rbenv_root }}
+  become: true
+  become_user: "{{ ruby_user }}"
+  tags: vitalied.ruby
+
+- name: update ruby-build repo
+  git:
+    repo=git://github.com/sstephenson/ruby-build.git
+    dest={{ rbenv_root }}/plugins/ruby-build
+  become: true
+  become_user: "{{ ruby_user }}"
+  tags: vitalied.ruby
+
+- name: add rbenv config to .bashrc
+  lineinfile:
+    dest=~{{ ruby_user }}/.bashrc
+    line="{{ item }}"
+  with_items: "{{ rbenv_bashrc }}"
+  tags: vitalied.ruby
+
+- name: check if ruby {{ ruby_version }} installed
+  stat: path={{ rbenv_root }}/versions/{{ ruby_version }}/bin/ruby
+  register: ruby_installed
+  tags: vitalied.ruby
+
+- block:
+  - name: install ruby {{ ruby_version }}
+    command: "{{ rbenv_root }}/bin/rbenv install {{ ruby_version }}"
+    tags: vitalied.ruby
+
+  - name: set global ruby {{ ruby_version }}
+    command: "{{ rbenv_root }}/bin/rbenv global {{ ruby_version }}"
+    tags: vitalied.ruby
+
+  when: not ruby_installed.stat.exists
+  become: true
+  become_user: "{{ ruby_user }}"
+  tags: vitalied.ruby
+
+- name: set gemrc
+  template:
+    src=.gemrc.j2
+    dest=~{{ ruby_user }}/.gemrc
+  become: true
+  become_user: "{{ ruby_user }}"
+  tags: vitalied.ruby
+
+- name: install default gems
+  gem:
+    name={{ item }}
+    state=latest
+    executable={{ rbenv_root }}/shims/gem
+    user_install=no
+  with_items: "{{ ruby_gems }}"
+  become: true
+  become_user: "{{ ruby_user }}"
+  tags: vitalied.ruby
